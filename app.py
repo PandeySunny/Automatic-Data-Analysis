@@ -339,6 +339,33 @@ def generate_dataset_explanation(df, filename, summary_source="full file"):
     return explanation
 
 
+def cleanup_old_files(max_age_seconds=1800):
+    """Delete files in uploads and static/plots folders older than max_age_seconds (default 30 mins)."""
+    import time
+    
+    folders = [app.config["UPLOAD_FOLDER"], app.config["PLOTS_FOLDER"]]
+    now = time.time()
+    
+    for folder in folders:
+        if not os.path.exists(folder):
+            continue
+            
+        for filename in os.listdir(folder):
+            file_path = os.path.join(folder, filename)
+            try:
+                # Skip if it's a directory or the .gitkeep file
+                if not os.path.isfile(file_path) or filename.startswith("."):
+                    continue
+                    
+                # Check file age
+                file_age = now - os.path.getmtime(file_path)
+                if file_age > max_age_seconds:
+                    os.remove(file_path)
+                    # app.logger.info(f"Deleted old file: {filename}")
+            except Exception as e:
+                app.logger.warning(f"Error deleting file {filename}: {e}")
+
+
 def generate_chart_explanations():
     """Generate simple explanations for basic chart types."""
     explanations = {
@@ -462,6 +489,9 @@ def results():
         flash("Uploaded file missing on server. Please re-upload.")
         session.pop("uploaded_filename", None)
         return redirect(url_for("upload_file"))
+    
+    # Clean up old files to keep storage usage low
+    cleanup_old_files()
 
     file_size_mb = os.path.getsize(full_path) / (1024 * 1024)
     app.logger.info("Preparing analysis for %s (%.2f MB)", full_path, file_size_mb)
