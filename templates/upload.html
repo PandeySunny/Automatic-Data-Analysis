@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Upload CSV • Data Analyzer Pro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description"
+    content="Professional data analysis platform with automated insights, fraud detection, and customer segmentation.">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+  <div class="container">
+    <!-- Hero Header -->
+    <div style="text-align: center; margin-bottom: 2rem;">
+      <h1>📊 Data Analyzer Pro</h1>
+      <p style="font-size: 1.125rem; color: var(--text-secondary); margin-bottom: 0;">
+        Upload your CSV files for instant insights with <strong style="color: var(--primary);">AI-powered
+          analysis</strong>,
+        fraud detection, and customer segmentation.
+      </p>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="flash">
+      {% for m in messages %}
+      <p style="margin: 0;">⚠️ {{ m }}</p>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- Success Message -->
+    {% if message %}
+    <div class="info">
+      <p style="margin: 0;">✅ {{ message }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Current File Status -->
+    {% if uploaded_filename %}
+    <div class="uploaded">
+      <p style="margin: 0; display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 1.25rem;">📄</span>
+        <strong>Current file:</strong>
+        <code style="background: rgba(59, 130, 246, 0.1); padding: 4px 8px; border-radius: 4px;">
+            {{ uploaded_filename.split('/')[-1] }}
+          </code>
+      </p>
+    </div>
+    {% endif %}
+
+    <!-- Upload Form -->
+    <form method="post" enctype="multipart/form-data" style="margin-top: 2rem;">
+
+      <label class="file-label">
+        <input type="file" name="file" accept=".csv"
+          onchange="this.parentElement.style.borderColor='var(--primary)'; this.parentElement.style.background='linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%)'" />
+      </label>
+
+      <div class="buttons">
+        <button type="submit" name="action" value="upload" class="btn primary">
+          <span>📤</span>
+          <span>Upload File</span>
+        </button>
+        <button type="submit" name="action" value="analyze" class="btn" {% if not uploaded_filename %}disabled
+          style="opacity: 0.5; cursor: not-allowed;" {% endif %}>
+          <span>🔍</span>
+          <span>Analyze Data</span>
+        </button>
+      </div>
+    </form>
+
+    <!-- Features Grid -->
+    <div style="margin-top: 3rem;">
+      <h2 style="text-align: center; margin-bottom: 2rem;">✨ Powerful Features</h2>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div style="font-size: 2rem; margin-bottom: 0.5rem;">📈</div>
+          <h3>Advanced Analytics</h3>
+          <p style="font-size: 0.875rem; color: var(--text-secondary); margin: 0;">
+            Comprehensive statistical analysis with automated insights
+          </p>
+        </div>
+
+        <div class="stat-card">
+          <div style="font-size: 2rem; margin-bottom: 0.5rem;">🛡️</div>
+          <h3>Fraud Detection</h3>
+          <p style="font-size: 0.875rem; color: var(--text-secondary); margin: 0;">
+            AI-powered anomaly detection using Isolation Forest algorithm
+          </p>
+        </div>
+
+        <div class="stat-card">
+          <div style="font-size: 2rem; margin-bottom: 0.5rem;">👥</div>
+          <h3>Segmentation</h3>
+          <p style="font-size: 0.875rem; color: var(--text-secondary); margin: 0;">
+            K-Means clustering for customer and transaction grouping
+          </p>
+        </div>
+
+        <div class="stat-card">
+          <div style="font-size: 2rem; margin-bottom: 0.5rem;">📊</div>
+          <h3>Visualizations</h3>
+          <p style="font-size: 0.875rem; color: var(--text-secondary); margin: 0;">
+            Beautiful charts and graphs for data exploration
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info Section -->
+    <div
+      style="margin-top: 3rem; padding: 1.5rem; background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%); border-radius: 12px; border: 1px solid rgba(99, 102, 241, 0.2);">
+      <h3 style="margin-top: 0; color: var(--primary);">📝 How It Works</h3>
+      <ol style="margin: 0; padding-left: 1.5rem; color: var(--text-secondary);">
+        <li style="margin-bottom: 0.5rem;"><strong>Upload</strong> your CSV file using the form above</li>
+        <li style="margin-bottom: 0.5rem;"><strong>Analyze</strong> the data with one click</li>
+        <li style="margin-bottom: 0.5rem;"><strong>Explore</strong> comprehensive insights, visualizations, and
+          ML-powered analytics</li>
+      </ol>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <small>
+        💾 Uploaded files are saved to <code>uploads/</code> •
+        📊 Plots are saved to <code>static/plots/</code> •
+        📁 Maximum file size: <strong>500 MB</strong>
+      </small>
+    </footer>
+  </div>
+
+  <!-- Simple interaction script -->
+  <script>
+    // Add smooth entrance animations
+    document.addEventListener('DOMContentLoaded', function () {
+      const cards = document.querySelectorAll('.stat-card');
+      cards.forEach((card, index) => {
+        card.style.animationDelay = `${0.1 * (index + 1)}s`;
+      });
+
+      // File input enhancement
+      const fileInput = document.querySelector('input[type="file"]');
+      const fileLabel = document.querySelector('.file-label');
+
+      if (fileInput && fileLabel) {
+        fileInput.addEventListener('change', function (e) {
+          const fileName = e.target.files[0]?.name;
+          if (fileName) {
+            fileLabel.setAttribute('data-filename', fileName);
+            fileLabel.style.borderColor = 'var(--primary)';
+            fileLabel.style.borderStyle = 'solid';
+          }
+        });
+
+        // Drag and drop visual feedback
+        ['dragenter', 'dragover'].forEach(eventName => {
+          fileLabel.addEventListener(eventName, function (e) {
+            e.preventDefault();
+            this.style.transform = 'scale(1.02)';
+            this.style.borderColor = 'var(--primary)';
+          });
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+          fileLabel.addEventListener(eventName, function (e) {
+            this.style.transform = 'scale(1)';
+          });
+        });
+      }
+    });
+  </script>
+
+  <!-- Clear plots when page closes -->
+  <script>
+    window.addEventListener('beforeunload', function() {
+      navigator.sendBeacon('/clear-plots', new Blob([''], {type: 'application/json'}));
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,9 @@
+Flask>=3.0.0
+Werkzeug>=3.0.0
+pandas>=2.0.0
+matplotlib>=3.7.0
+seaborn>=0.13.0
+gunicorn
+scikit-learn
+joblib
+boto3
